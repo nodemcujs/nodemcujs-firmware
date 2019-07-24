@@ -1,2 +1,4 @@
 .vscode
+deps/jerryscript
 build
+

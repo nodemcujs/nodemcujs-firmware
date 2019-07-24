@@ -76,10 +76,16 @@ ESP-IDF(V3.2-RC): https://docs.espressif.com/projects/esp-idf/zh_CN/v3.2-rc/get-
 ## 2. 获取 nodemcujs 源码
 
 ```bash
-$ git clone git@github.com:nodemcujs/nodemcujs-firmware.git
+$ git clone --recursive git@github.com:nodemcujs/nodemcujs-firmware.git
 ```
 
-项目已经内置了 JerryScript 并修改了一些 CMakeLists.txt 以使得它可以在 ESP-IDF 中构建。
+项目已经将 JerryScript 作为子模块，存放在 `/deps/jerryscript` 目录下。`clone` 的时候会一并将所有子模块 clone 下来。
+
+如果你忘记了在 `clone` 时候加 `--recursive` 选项，那么你可以通过下面的命令单独 clone `子模块`。
+
+```bash
+$ git submodule update --init
+```
 
 ## 3. 编译固件
 
@@ -97,10 +103,10 @@ $ cd build
 使用 Cmake 构建
 
 ```bash
-cmake ../
+$ cmake ../
 ```
 
-配置构建参数。大多数情况下使用默认参数就可以，这里一般只需要配置好串口和波特率。
+可选步骤。配置构建参数。大多数情况下使用默认参数就可以，这里一般只需要配置好串口和波特率。
 
 ```bash
 $ make menuconfig
@@ -111,7 +117,7 @@ $ make menuconfig
 最后进行编译固件。
 
 ```bash
-make
+$ make
 ```
 
 ## 4. 烧录固件
@@ -125,7 +131,7 @@ make
 使用下面的命令进行固件的烧录。
 
 ```bash
-make flash
+$ make flash
 ```
 
 如果你看到控制台输出如下信息，并一直停留，那么你需要手动让 ESP32 芯片进入下载模式。
@@ -145,6 +151,8 @@ Connecting........___........___
 对于没有或者不方便安装 ESP-IDF 工程的用户，可以使用烧录工具进行烧录已经构建好的固件。
 
 我们推荐使用 [esptool.py][esptool] 工具进行烧录。可以从 [release][release-github] 页面下载已经构建好的固件。
+
+Tips: ESP-IDF 内置了 `esptool.py` 工具，可以直接使用。路径在 `$IDF_PATH/components/esptool_py/esptool/esptool.py`
 
 ```bash
 $ python esptool.py --chip esp32 -p /dev/ttyUSB0 -b 460800 write_flash --flash_mode dio --flash_size detect --flash_freq 80m 0x1000 bootloader.bin 0x8000 partition-table.bin 0x10000 nodemcujs.bin
@@ -177,6 +185,8 @@ $ mkspiffs -c spiffs -b 4096 -p 256 -s 0x2F0000 spiffs.bin
 这里有几点需要注意：
 
 > -s 0x2F0000 是 nodemcujs 所使用的大小，至少在目前你不能大于此值。除非你自己定义分区表。
+>
+> 编译 mkspiffs 时需要传递参数: `CPPFLAGS="-DSPIFFS_OBJ_META_LEN=4"` 否则会出现 nodemcujs 文件系统无法工作。
 
 ## 7. 烧录文件到 flash 芯片
 
@@ -185,7 +195,7 @@ nodemcujs 会在启动时检查分区，如果无法挂载 `storage` 分区，�
 你可以将你的 JavaScript 应用或者任何文件烧录到 ESP32 上，nodemcujs 会在启动时自动加载 `/spiffs/index.js` 文件，所以这可能是自动启动应用的一个好主意。
 
 ```bash
-python esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 115200 write_flash -z 0x10000 spiffs.bin
+$ python esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 115200 write_flash -z 0x110000 spiffs.bin
 ```
 
 使用上面的命令将文件镜像烧录到 flash 中。
@@ -195,6 +205,16 @@ python esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 115200 write_flash -z 
 > 一旦你烧录文件镜像，则原来的分区会被覆盖掉，请知道你自己在做什么。
 >
 > -z 0x10000 是目前 nodemcujs 默认分区表参数，至少在目前你不能小于此值，否则 app 程序可能会被覆盖。
+
+## 8. 更新 jerryscript
+
+jerryscript 作为一个子模块放置在 `/deps/jerryscript` 目录下，所以更新 jerryscript 很方便，进入 `/deps/jerryscript` 目录，使用 `git` 拉取最新 `commit` 就行了。
+
+或者手动下载最新 jerryscript 文件替换掉。
+
+# FAQ | 常见错误一览
+
+请前往官方网站查看。
 
 # License
 
