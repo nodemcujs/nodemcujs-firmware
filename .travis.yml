@@ -16,5 +16,4 @@ install:
  - python -m pip install --user -r $IDF_PATH/requirements.txt
 
 script:
- - mkdir build
- - cd build && cmake .. && make
+ - scripts/build-firmware.sh

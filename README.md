@@ -1,4 +1,4 @@
-# nodemcujs
+# nodemcujs [![Build Status](https://travis-ci.com/nodemcujs/nodemcujs-firmware.svg?branch=master)](https://travis-ci.com/nodemcujs/nodemcujs-firmware)
 
 > 目前处于开发阶段，还有很多需要做
 
