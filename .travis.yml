@@ -1,0 +1,16 @@
+language: c
+os: linux
+dist: bionic
+
+before_install:
+ - sudo apt-get install -y git wget libncurses-dev flex bison gperf python python-click python-pip python-setuptools python-serial python-cryptography python-future python-pyparsing python-pyelftools cmake ninja-build ccache
+ - export IDF_PATH="$HOME/esp-idf-v3.2"
+ - export XTENSA="$HOME/xtensa-esp32-elf"
+ - export PATH="$XTENSA/bin:$IDF_PATH/tools:$PATH"
+
+install:
+ - scripts/install-xtensa.sh
+ - scripts/install-idf-v3.2.sh
+
+script:
+ - scripts/build-firmware.sh
