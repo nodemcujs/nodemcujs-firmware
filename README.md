@@ -59,7 +59,7 @@ foo();
 
 ### 1.1 设置工具链
 
-按照官方文档进行编译工具链的安装。
+按照官方文档进行编译工具链的安装。注意 ESP-IDF 的版本和 xtensa 工具链的版本，请使用以下页面中的工具链版本。
 
 - Windows: https://docs.espressif.com/projects/esp-idf/zh_CN/v3.2-rc/get-started/windows-setup.html
 - Linux: https://docs.espressif.com/projects/esp-idf/zh_CN/v3.2-rc/get-started/linux-setup.html
