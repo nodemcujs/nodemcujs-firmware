@@ -6,6 +6,8 @@
 #include "jerryscript-ext/handler.h"
 #include "jerryscript-port.h"
 
+extern jerry_value_t nodemcujs_module_get(const char* name);
+
 static jerry_value_t require_handler(const jerry_value_t func_value, /**< function object */
                                      const jerry_value_t this_value, /**< this arg */
                                      const jerry_value_t args[],     /**< function arguments */
@@ -15,6 +17,12 @@ static jerry_value_t require_handler(const jerry_value_t func_value, /**< functi
   jerry_char_t name[strLen + 1];
   jerry_string_to_char_buffer(args[0], name, strLen);
   name[strLen] = '\0';
+
+  jerry_value_t native = nodemcujs_module_get((char *)name);
+  if (native != NULL)
+  {
+    return native;
+  }
 
   size_t size = 0;
   jerry_char_t *script = jerry_port_read_source((char *)name, &size);

@@ -28,6 +28,7 @@ github: https://github.com/nodemcujs/nodemcujs-doc
 
 - [ ] require 相对路径支持
 - [ ] 内置模块
+- [x] native 模块
 - [ ] 错误处理和调试
 - [ ] 桥接驱动
 - [ ] 完善文档
@@ -211,6 +212,47 @@ $ python esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 115200 write_flash -
 jerryscript 作为一个子模块放置在 `/deps/jerryscript` 目录下，所以更新 jerryscript 很方便，进入 `/deps/jerryscript` 目录，使用 `git` 拉取最新 `commit` 就行了。
 
 或者手动下载最新 jerryscript 文件替换掉。
+
+## 9. native 模块
+
+硬件驱动部分或者性能要求高的部分，我们必须使用 C\C++ 编写，这个时候就需要用到 `native` 模块了。比如 `GPIO` 模块。
+
+`native` 模块是由 C\C++ 编写的模块，它和 JS 文件模块的使用方法是一样的，都使用 `require` 引入。一个 `native` 模块就是一个 `component`，以 `nodemcujs_module_xxx` 命名。我们规定 `native` 模块都必须有一个 `nodemcujs_init_xxx` 方法用于导出，该函数的返回值是 `jerry_value_t` 类型。然后在 `components/nodemcujs_buildin/include/nodemcujs_module_inl.h` 中注册模块才能在 JS 中使用。
+
+下面我们以注册 `GPIO` 模块为例。
+
+首先我们编写该模块的 init 函数：
+
+```c
+// components/nodemcujs_module_gpio/nodemcujs_module_gpio.c
+
+jerry_value_t nodemcujs_init_gpio()
+{
+    jerry_value_t gpio = jerry_create_object();
+    // ......
+    return gpio;
+}
+```
+
+然后再注册该模块：
+
+```c
+// components/nodemcujs_buildin/include/nodemcujs_module_inl.h
+
+extern jerry_value_t nodemcujs_init_gpio();
+
+const nodemcujs_module_t nodemcujs_modules[] = {
+  { "gpio", nodemcujs_init_gpio }
+};
+```
+
+只需要 2 步我们就完成了 native 模块的注册，最后可以在 JS 中使用它了：
+
+```js
+var gpio = require('gpio')
+```
+
+`native` 模块是有`缓存`的，init 方法被调用后，会将模块的值缓存起来，以后再次 `require` 将会直接返回缓存的值。
 
 # FAQ | 常见错误一览
 
