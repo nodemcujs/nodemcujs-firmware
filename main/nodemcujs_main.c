@@ -221,7 +221,7 @@ void app_main()
   // handle uart input
   handle_uart_input();
 
-  // init node core apt
+  // init node core api
   module_timer_init();
   module_console_init();
   module_module_init();
