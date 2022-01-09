@@ -26,10 +26,11 @@ github: https://github.com/nodemcujs/nodemcujs-doc
 
 # Todo
 
-- [ ] require 相对路径支持
-- [ ] 内置模块
+- [x] require 相对路径支持
+- [x] 内置模块
 - [x] native 模块
-- [ ] 错误处理和调试
+- [x] 错误输出
+- [ ] 调试功能
 - [ ] 桥接驱动
 - [ ] 完善文档
 - [ ] 更多。。。
@@ -37,7 +38,7 @@ github: https://github.com/nodemcujs/nodemcujs-doc
 # hello world
 
 ```js
-var foo = require('/spiffs/foo.js')
+var foo = require('/foo.js')
 
 setInterval(() => {
     console.log('hello nodemcujs!')

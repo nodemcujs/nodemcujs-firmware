@@ -7,7 +7,8 @@
    CONDITIONS OF ANY KIND, either express or implied.
 */
 
-#include "include/nodemcu_config.h"
+#include "include/nodemcujs_config.h"
+#include "nodemcujs.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -28,13 +29,7 @@
 #include "driver/uart.h"
 #include "esp_spiffs.h"
 
-// node core api
-
-#include "timer.h"
-#include "console.h"
-#include "jerry-module.h"
-
-void nodemcu_init(void);
+void nodemcujs_init(void);
 
 static QueueHandle_t uart_queue;
 
@@ -146,16 +141,10 @@ static void handle_uart_input()
   xTaskCreate(uart_event_task, "uart_event_task", INTERACTIVE_UART_TASK_STACK_DEPTH, NULL, 12, NULL);
 }
 
-static void start_jerryscript()
-{
-  /* Initialize engine */
-  jerry_init(JERRY_INIT_EMPTY);
-}
-
 static void mount_spiffs()
 {
   esp_vfs_spiffs_conf_t conf = {
-    .base_path = "/spiffs",
+    .base_path = "",
     .partition_label = NULL,
     .max_files = 5,
     .format_if_mount_failed = true
@@ -187,47 +176,21 @@ static void mount_spiffs()
   } else {
     printf("Partition size: total: %d, used: %d\n", total, used);
   }
-}
 
-static void load_js_entry()
-{
-  char *entry = "/spiffs/index.js";
-  size_t size = 0;
-  jerry_char_t *script = jerry_port_read_source(entry, &size);
-  if (script == NULL) {
-    printf("No such file: /spiffs/index.js\n");
-    return;
-  }
-  jerry_value_t parse_code = jerry_parse((jerry_char_t *)entry, strlen(entry), script, size, JERRY_PARSE_NO_OPTS);
-  if (jerry_value_is_error(parse_code)) {
-    printf("Unexpected error\n");
-  } else {
-    jerry_value_t ret_value = jerry_run(parse_code);
-    jerry_release_value(ret_value);
-  }
-  jerry_release_value(parse_code);
-  jerry_port_release_source(script);
+  fflush(stdout);
 }
 
 void app_main()
 {
-  // user code init
-  nodemcu_init();
-
-  // mount spiffs
-  mount_spiffs();
-  // init jerryscript
-  start_jerryscript();
+  fflush(stdout);
   // handle uart input
   handle_uart_input();
-
-  // init node core api
-  module_timer_init();
-  module_console_init();
-  module_module_init();
-
-  // todo: execute index.js here
-  load_js_entry();
+  // mount spiffs
+  mount_spiffs();
+  // user code init
+  nodemcujs_init();
+  // nodemcujs entry
+  nodemcujs_entry();
 
   while (true)
   {
@@ -239,7 +202,7 @@ void app_main()
   jerry_cleanup();
 }
 
-void nodemcu_init(void)
+void nodemcujs_init(void)
 {
 #ifdef PRINT_CHIP_INFO
   print_chip_info();

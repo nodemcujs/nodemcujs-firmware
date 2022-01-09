@@ -1,8 +1,13 @@
-var a = require("/spiffs/a.js");
-var b = require("/spiffs/b.js");
+var LED_PIN = 2;
+var INPUT = 1;
+var OUTPUT = 2;
+var HIGH = 1;
+var LOW = 0;
 
-a.a();
-b();
+var gpio = require('gpio');
+gpio.mode(LED_PIN, OUTPUT);
+
+console.log("staring sort test...");
 
 function sort(arr) {
   var n = arr.length;
@@ -27,3 +32,10 @@ for (index = 0; index <= 99; index++) {
   sort(testArray);
 }
 console.log("sort 100 times: %dms", (new Date() - startTime));
+
+var state = HIGH;
+
+setInterval(function() {
+  gpio.write(LED_PIN, state);
+  state = state === HIGH ? LOW : HIGH;
+}, 1000);
