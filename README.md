@@ -14,6 +14,19 @@ github: https://github.com/nodemcujs/nodemcujs-doc
 
 这是 nodemcujs 的网站，所有文档和最新信息将会发布在这里。也可以通过 fork 项目贡献文章。文档还在不断完善中。
 
+# 已经支持的功能/模块
+
+**驱动**
+
+- [x] GPIO 目前支持基本的 mode、write、read
+
+**Node**
+
+- [x] 定时器，目前支持 setTimeout、setInterval
+- [x] CMD模块系统
+- [x] native Addons（需源码编译到固件，未来我们会支持 静态库）
+- [x] 串口错误日志输出 (方便调试代码报错)
+
 # 特性
 
 - 串口命令行交互
@@ -26,12 +39,11 @@ github: https://github.com/nodemcujs/nodemcujs-doc
 
 # Todo
 
-- [x] require 相对路径支持
-- [x] 内置模块
-- [x] native 模块
-- [x] 错误输出
+- [ ] 事件循环
+- [ ] 桥接驱动 IIC SPI
+- [ ] tGFX 图形库
+- [ ] 文件模块
 - [ ] 调试功能
-- [ ] 桥接驱动
 - [ ] 完善文档
 - [ ] 更多。。。
 
@@ -53,27 +65,31 @@ foo();
 
 ## 1. 开发环境搭建
 
-项目使用 CMake `cmake_minimum_required (VERSION 2.8.12)` 构建。
+项目使用 CMake `cmake_minimum_required (VERSION 3.5)` 构建。
 
 我在 MacOS 10.13、Ubuntu 18.04.2 LTS、Windows 10 中已验证构建通过，你可以选择适合自己的开发环境。
 
 在 Windows 中环境设置比较麻烦，请仔细参照官方文档进行环境安装，我多数在 Ubuntu 下进行开发测试。
 
-### 1.1 设置工具链
+### 1.1 获取 ESP-IDF (V4.3.1)
 
-按照官方文档进行编译工具链的安装。注意 ESP-IDF 的版本和 xtensa 工具链的版本，请使用以下页面中的工具链版本。
+参照官方文档进行安装。注意本项目使用的是 V4.3.1 版本，理论上 v4 全系版本都支持的。
+
+ESP-IDF(V4.3.1): https://docs.espressif.com/projects/esp-idf/zh_CN/v4.3.1/esp32/get-started/index.html#esp-idf
+
+你也可以在没有安装 git 的环境中下载源码包: https://dl.espressif.com/dl/esp-idf/releases/esp-idf-v4.3.1.zip
+
+### 1.2 设置工具链
+
+在设置工具链前，请按照对应的系统安装必须的软件包：
 
 - Windows: https://docs.espressif.com/projects/esp-idf/zh_CN/v3.2-rc/get-started/windows-setup.html
 - Linux: https://docs.espressif.com/projects/esp-idf/zh_CN/v3.2-rc/get-started/linux-setup.html
 - MaxOS: https://docs.espressif.com/projects/esp-idf/zh_CN/v3.2-rc/get-started/macos-setup.html
 
-### 1.2 获取 ESP-IDF (V3.2-RC)
+然后按照官方文档进行编译工具链的安装：
 
-参照官方文档进行安装。注意本项目使用的是 V3.2-RC 版本。
-
-ESP-IDF(V3.2-RC): https://docs.espressif.com/projects/esp-idf/zh_CN/v3.2-rc/get-started/index.html#esp-idf
-
-你也可以在没有安装 git 的环境中下载源码包: https://github.com/espressif/esp-idf/releases/download/v3.2/esp-idf-v3.2.zip
+https://docs.espressif.com/projects/esp-idf/zh_CN/v4.3.1/esp32/get-started/index.html#get-started-set-up-tools。
 
 ## 2. 获取 nodemcujs 源码
 
@@ -90,6 +106,8 @@ $ git submodule update --init
 ```
 
 ## 3. 编译固件
+
+先进入项目根目录：
 
 ```bash
 $ cd nodemcujs-firmware
@@ -124,11 +142,12 @@ $ make
 
 ## 4. 烧录固件
 
-如果编译成功，会生成 3 个文件：
+如果编译成功，会生成 4 个文件：
 
 1. nodemcujs.bin (可执行 app)
 2. bootloader/bootloader.bin (引导)
 3. partition_table/partition_table.bin (分区表)
+4. storage.bin (用户文件镜像)
 
 使用下面的命令进行固件的烧录。
 
@@ -146,7 +165,13 @@ Serial port /dev/ttyUSB0
 Connecting........___........___
 ```
 
-等待烧录完成，重启 ESP32 就可以了。你可以使用 ESPlorer 连接上 ESP32，输入 JavaScript 和它进行交互了。
+等待烧录完成，重启 ESP32 就可以了。
+
+> 注意：make flash 会自动烧录文件镜像，此文件镜像就是 spiffs 目录下的文件。
+
+系统上电会默认启动用户文件系统中的 /index.js，所以你的应用入口可以写在这里。
+
+此外你还可以使用 ESPlorer 连接上 ESP32，输入 JavaScript 和它进行交互了。
 
 ## 5. 手动烧录固件
 
@@ -157,7 +182,7 @@ Connecting........___........___
 Tips: ESP-IDF 内置了 `esptool.py` 工具，可以直接使用。路径在 `$IDF_PATH/components/esptool_py/esptool/esptool.py`
 
 ```bash
-$ python esptool.py --chip esp32 -p /dev/ttyUSB0 -b 460800 write_flash --flash_mode dio --flash_size detect --flash_freq 80m 0x1000 bootloader.bin 0x8000 partition-table.bin 0x10000 nodemcujs.bin
+$ python esptool.py --chip esp32 -p /dev/ttyUSB0 -b 460800 write_flash --flash_mode dio --flash_size detect --flash_freq 80m 0x1000 bootloader.bin 0x8000 partition-table.bin 0x10000 nodemcujs.bin 0x00110000 storage.bin
 ```
 
 这里有几点需要说明：
@@ -169,20 +194,29 @@ $ python esptool.py --chip esp32 -p /dev/ttyUSB0 -b 460800 write_flash --flash_m
 > 0x1000 和 0x8000，以及 0x10000 使用的是默认值。
 >
 > 第一次烧录需要这 3 个文件，以后烧录只需要一个 nodemcujs.bin 文件就行了。
+>
+> storage.bin 是可选的，系统启动只需要前面三个固件即可。
 
 ## 6. 制作文件镜像
 
+制作文件镜像有多种方式，我们推荐使用 nodemcujs 里面集成的方式: 
+
+- 将你的 .js 文件或者其它文件放到项目根目录下的 `spiffs` 文件夹内，该文件夹下面的所有文件会被打包成一个 `storage.bin` 镜像。
+- 然后执行 `make flash` 即可制作镜像并且自动烧录。
+
+**手动制作文件镜像**
+
 nodemcujs 使用 [spiffs][spiffs] 作为默认文件系统，容量大约为 `2.7MB`，所以文件的总大小不能超出此范围。关于为什么容量只有 2.7MB，请参考 [partitions.csv][partitions.csv]。
 
-我们建议将要烧录到 flash 存储的文件放到 `spiffs` 文件夹内，未来的构建系统中，我们将会自动构建 flash 镜像并随固件一起烧录。文件系统也是默认以 `/spiffs` 为前缀的。
+我们建议将要烧录到 flash 存储的文件放到 `spiffs` 文件夹内，在我们的构建系统中，我们将会自动构建 flash 镜像并随固件一起烧录。文件系统是默认以 `/` 为根目录的。
 
 我们使用 [mkspiffs][mkspiffs] 来制作镜像。这是 C++ 工程，首先你要编译它，得到可执行文件 `mkspiffs`。
 
 ```bash
-$ mkspiffs -c spiffs -b 4096 -p 256 -s 0x2F0000 spiffs.bin
+$ mkspiffs -c spiffs -b 4096 -p 256 -s 0x2F0000 storage.bin
 ```
 
-上面的命令会将 `spiffs` 文件夹内的全部文件打包成镜像，并且在当前目录生成 `spiffs.bin` 文件。
+上面的命令会将 `spiffs` 文件夹内的全部文件打包成镜像，并且在当前目录生成 `storage.bin` 文件。
 
 这里有几点需要注意：
 
@@ -191,6 +225,8 @@ $ mkspiffs -c spiffs -b 4096 -p 256 -s 0x2F0000 spiffs.bin
 > 编译 mkspiffs 时需要传递参数: `CPPFLAGS="-DSPIFFS_OBJ_META_LEN=4"` 否则会出现 nodemcujs 文件系统无法工作。
 
 ## 7. 烧录文件到 flash 芯片
+
+**手动烧录文件镜像**
 
 nodemcujs 会在启动时检查分区，如果无法挂载 `storage` 分区，则会`自动格式化 storage` 分区并挂载。
 
@@ -218,16 +254,25 @@ jerryscript 作为一个子模块放置在 `/deps/jerryscript` 目录下，所�
 
 硬件驱动部分或者性能要求高的部分，我们必须使用 C\C++ 编写，这个时候就需要用到 `native` 模块了。比如 `GPIO` 模块。
 
-`native` 模块是由 C\C++ 编写的模块，它和 JS 文件模块的使用方法是一样的，都使用 `require` 引入。一个 `native` 模块就是一个 `component`，以 `nodemcujs_module_xxx` 命名。我们规定 `native` 模块都必须有一个 `nodemcujs_init_xxx` 方法用于导出，该函数的返回值是 `jerry_value_t` 类型。然后在 `components/nodemcujs_buildin/include/nodemcujs_module_inl.h` 中注册模块才能在 JS 中使用。
+在这之前，有几个关于模块的概念必须要搞清楚：
 
-下面我们以注册 `GPIO` 模块为例。
+- 第三方模块：用户编写的，存在于文件系统上的 .js 文件，我们叫第三方模块。
+- 内置js模块：编译到 nodemcujs 固件里面的 .js 文件，我们叫内置模块，比如 path 模块。它们存在 /main/src/js/ 文件夹下面。
+- native模块：使用 C\C++ 编写的模块，我们叫 native模块。比如 GPIO。
+
+> 注意：通常内置模块包含一个对应的 native模块，我们把 内置js 和 native模块 统称为 内置模块。比如 console。
+> 如果一个内置模块有对应的 native模块，则 nodemcujs 会自动将对应的 native模块 注入到 内置js模块中，通过 native 全局变量引用。
+
+`native` 模块是由 C\C++ 编写的模块，它和 JS 文件模块的使用方法是一样的。native模块以 `nodemcujs_module_xxx.c` 命名，存放在 `/main/src/modules` 文件夹下，我们规定 `native` 模块都必须有一个 `nodemcujs_module_init_xxx` 方法用于导出，该函数的返回值是 `jerry_value_t` 类型。
+
+下面我们以编写 `GPIO` 模块为例。
 
 首先我们编写该模块的 init 函数：
 
 ```c
-// components/nodemcujs_module_gpio/nodemcujs_module_gpio.c
+// main/src/modules/nodemcujs_module_gpio.c
 
-jerry_value_t nodemcujs_init_gpio()
+jerry_value_t nodemcujs_module_init_gpio()
 {
     jerry_value_t gpio = jerry_create_object();
     // ......
@@ -235,25 +280,37 @@ jerry_value_t nodemcujs_init_gpio()
 }
 ```
 
-然后再注册该模块：
+新增native模块后，需要重新执行 `cmake ..` 构建。然后我们就可以通过 `var gpio = require('gpio')` 使用了。
 
-```c
-// components/nodemcujs_buildin/include/nodemcujs_module_inl.h
-
-extern jerry_value_t nodemcujs_init_gpio();
-
-const nodemcujs_module_t nodemcujs_modules[] = {
-  { "gpio", nodemcujs_init_gpio }
-};
-```
-
-只需要 2 步我们就完成了 native 模块的注册，最后可以在 JS 中使用它了：
+此外，我们还可以再编写一个对应的内置js模块，把native模块通过js包装成更友好的API：
 
 ```js
-var gpio = require('gpio')
+// main/src/js/gpio.js
+
+var gpio = native; // 这个全局变量 native 就是 C函数 nodemcujs_module_init_gpio 返回的对象
+
+function GPIO(pin) {
+  this.pin = pin;
+}
+
+GPIO.prototype.mode = function(mode) {
+  gpio.mode(this.pin, mode);
+}
+
+GPIO.prototype.write = function(level) {
+  gpio.write(this.pin, level);
+}
+
+module.exports = GPIO;
 ```
 
-`native` 模块是有`缓存`的，init 方法被调用后，会将模块的值缓存起来，以后再次 `require` 将会直接返回缓存的值。
+最后在 JS 中使用它：
+
+```js
+var GPIO = require('gpio') // 此时 gpio 就是 gpio.js 到处的对象了
+```
+
+`native` 模块是有 `缓存` 的，init 方法被调用后，会将模块的值缓存起来，以后再次 `require` 将会直接返回缓存的值。
 
 # FAQ | 常见错误一览
 
@@ -270,5 +327,5 @@ var gpio = require('gpio')
 [release-github]: https://github.com/nodemcujs/nodemcujs-firmware/releases
 [partitions.csv]: ./partitions.csv
 [mkspiffs]: https://github.com/igrr/mkspiffs
-[spiffs]: https://docs.espressif.com/projects/esp-idf/zh_CN/v3.2-rc/api-reference/storage/spiffs.html
+[spiffs]: https://docs.espressif.com/projects/esp-idf/zh_CN/v4.3.1/esp32/api-reference/storage/spiffs.html
 [MIT]: [./LICENSE]
