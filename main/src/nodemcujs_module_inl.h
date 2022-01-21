@@ -7,21 +7,24 @@
 
 #include "nodemcujs_module.h"
 
-const unsigned nodemcujs_modules_count = 4;
+const unsigned nodemcujs_modules_count = 5;
 
 extern jerry_value_t nodemcujs_module_init_console();
 extern jerry_value_t nodemcujs_module_init_gpio();
 extern jerry_value_t nodemcujs_module_init_process();
+extern jerry_value_t nodemcujs_module_init_spi_master();
 extern jerry_value_t nodemcujs_module_init_timers();
 
 const nodemcujs_module_t nodemcujs_modules[] = {
   { "console", nodemcujs_module_init_console },
   { "gpio", nodemcujs_module_init_gpio },
   { "process", nodemcujs_module_init_process },
+  { "spi_master", nodemcujs_module_init_spi_master },
   { "timers", nodemcujs_module_init_timers },
 };
 
 nodemcujs_module_objects_t nodemcujs_module_objects[] = {
+  { 0 },
   { 0 },
   { 0 },
   { 0 },

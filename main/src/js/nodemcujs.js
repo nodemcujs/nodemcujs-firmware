@@ -40,6 +40,7 @@
   global.setTimeout = timers.setTimeout;
   global.clearInterval = timers.clearInterval;
   global.clearTimeout = timers.clearTimeout;
+  process.delay = timers.delay;
 
   var EventEmitter = Module.require('events').EventEmitter;
   EventEmitter.call(process);

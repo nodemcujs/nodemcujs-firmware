@@ -6,6 +6,7 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/timers.h"
+#include "freertos/task.h"
 
 #include "jerryscript-ext/handler.h"
 
@@ -120,6 +121,12 @@ JS_FUNCTION(ClearTimerHandler) {
   return jerry_create_undefined();
 }
 
+JS_FUNCTION(Delay) {
+  TickType_t delay = JS_GET_ARG(0, number);
+  vTaskDelay(delay / portTICK_PERIOD_MS);
+  return jerry_create_boolean(true);
+}
+
 void nodemcujs_module_init_timers()
 {
   timerIdList = list_new();
@@ -130,6 +137,7 @@ void nodemcujs_module_init_timers()
   nodemcujs_jval_set_method(timer, NODEMCUJS_MAGIC_STRING_SETTIMEOUT, SetTimeoutHandler);
   nodemcujs_jval_set_method(timer, "clearInterval", ClearTimerHandler);
   nodemcujs_jval_set_method(timer, "clearTimeout", ClearTimerHandler);
+  nodemcujs_jval_set_method(timer, "delay", Delay);
 
   jerry_release_value(timer);
 }

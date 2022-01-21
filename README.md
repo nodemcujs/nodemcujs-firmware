@@ -1,7 +1,5 @@
 # nodemcujs [![Build Status](https://travis-ci.com/nodemcujs/nodemcujs-firmware.svg?branch=master)](https://travis-ci.com/nodemcujs/nodemcujs-firmware)
 
-> 目前处于开发阶段，还有很多需要做
-
 ### A real JavaScript based interactive firmware for ESP32.
 
 nodemcujs 是一个在 ESP32 芯片上的 JavaScript 运行时。不同于 NodeMcu，这是在 ESP32 芯片上运行了一个真正的 JavaScript 虚拟机。在 ESP32 上编写 JavaScript 就和编写 NodeJS 程序一样。并且提供了一个 32MBit 的片上虚拟文件系统，你可以编写模块化的应用，然后使用 require() 导入模块。甚至直接将你的兼容 NodeJS 模块运行在 ESP32 上，而无需做任何改动。
@@ -19,23 +17,24 @@ github: https://github.com/nodemcujs/nodemcujs-doc
 **驱动**
 
 - [x] GPIO 目前支持基本的 mode、write、read
+- [x] GPIO Master mode 目前仅支持 HSPI
 
 **Node**
 
-- [x] 定时器，目前支持 setTimeout、setInterval
+- [x] 定时器，目前支持 setTimeout、setInterval、delay（同步非阻塞延时）
 - [x] CMD模块系统
 - [x] native Addons（需源码编译到固件，未来我们会支持 静态库）
 - [x] 串口错误日志输出 (方便调试代码报错)
 
 # 特性
 
-- 串口命令行交互
+- 纯 C 开发，代码结构遵循NodeJS，上手简单
+- 遵循 CMD 模块规范
 - 使用开源 JerryScript，内存开销小，开源社区支持
 - 完整 ES5， 部分 ES6 语法支持
 - 虚拟文件系统
-- 遵循 CMD 模块规范
+- 串口shell命令行交互，方便调试
 - 使用官方 ESP_IDF 工程，集成硬件驱动
-- 纯 C 开发，编写 addon 方便
 
 # Todo
 

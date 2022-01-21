@@ -39,6 +39,10 @@ extern const char path_n[];
 extern const uint8_t path_s[];
 extern const size_t path_l;
 
+extern const char spi_n[];
+extern const uint8_t spi_s[];
+extern const size_t spi_l;
+
 extern const char util_n[];
 extern const uint8_t util_s[];
 extern const size_t util_l;
