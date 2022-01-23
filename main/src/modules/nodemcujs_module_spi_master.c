@@ -32,7 +32,7 @@ void IRAM_ATTR spiTransferCallbackPRE(spi_transaction_t *t) {
 void IRAM_ATTR spiTransferCallbackPOST(spi_transaction_t *t) {
   nodemcujs_spi_transaction_context_t *transaction = (nodemcujs_spi_transaction_context_t*)t->user;
   if (transaction->RW == 1) {
-    free(t->tx_buffer);
+    free((void*)t->tx_buffer);
   }
   free(transaction);
   free(t);
