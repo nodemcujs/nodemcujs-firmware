@@ -12,7 +12,14 @@ github: https://github.com/nodemcujs/nodemcujs-doc
 
 这是 nodemcujs 的网站，所有文档和最新信息将会发布在这里。也可以通过 fork 项目贡献文章。文档还在不断完善中。
 
-# 已经支持的功能/模块
+# 示例 | Examples
+
+**SPI**
+
+- [st7735 1.44寸TFT屏幕](examples/spi/st7735-spi.js)
+- [st7789 1.3寸IPS屏幕](examples/spi/st7789-spi.js)
+
+# 已经支持的功能/模块 | Supported
 
 **驱动**
 
@@ -26,7 +33,7 @@ github: https://github.com/nodemcujs/nodemcujs-doc
 - [x] native Addons（需源码编译到固件，未来我们会支持 静态库）
 - [x] 串口错误日志输出 (方便调试代码报错)
 
-# 特性
+# 特性 | Feature
 
 - 纯 C 开发，代码结构遵循NodeJS，上手简单
 - 遵循 CMD 模块规范
@@ -51,11 +58,13 @@ github: https://github.com/nodemcujs/nodemcujs-doc
 ```js
 var foo = require('/foo.js')
 
-setInterval(() => {
-    console.log('hello nodemcujs!')
-}, 1000)
+console.log('hello nodemcujs')
 
-foo();
+process.delay(1000) // sync operation
+
+setTimeout(function() {
+  console.log('timeout')
+}, 1000)
 ```
 
 # 快速开始
