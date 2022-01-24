@@ -65,6 +65,8 @@ process.delay(1000) // sync operation
 setTimeout(function() {
   console.log('timeout')
 }, 1000)
+
+console.log('hello world')
 ```
 
 # 快速开始
