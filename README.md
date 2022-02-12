@@ -19,12 +19,17 @@ github: https://github.com/nodemcujs/nodemcujs-doc
 - [st7735 1.44寸TFT屏幕](examples/spi/st7735-spi.js)
 - [st7789 1.3寸IPS屏幕](examples/spi/st7789-spi.js)
 
+**sigmadelta**
+
+- [led呼吸灯](examples/sigmadelta/led.js)
+
 # 已经支持的功能/模块 | Supported
 
 **驱动**
 
 - [x] GPIO 目前支持基本的 mode、write、read
 - [x] GPIO Master mode 目前仅支持 HSPI
+- [x] sigmadelta second-order
 
 **Node**
 
