@@ -16,31 +16,37 @@ github: https://github.com/nodemcujs/nodemcujs-doc
 
 **SPI**
 
-- [st7735 1.44寸TFT屏幕](examples/spi/st7735-spi.js)
-- [st7789 1.3寸IPS屏幕](examples/spi/st7789-spi.js)
+- [st7735 1.44寸TFT屏幕: examples/spi/st7735-spi.js](examples/spi/st7735-spi.js)
+- [st7789 1.3寸IPS屏幕: examples/spi/st7789-spi.js](examples/spi/st7789-spi.js)
 
-**sigmadelta**
+**Sigmadelta Modulation**
 
-- [led呼吸灯](examples/sigmadelta/led.js)
+- [led呼吸灯: examples/sigmadelta/led.js](examples/sigmadelta/led.js)
+
+**Remote Control**
+
+- [WS2812B 全彩LED: examples/remote_control/ws2812b.js](examples/remote_control/ws2812b.js)
 
 # 已经支持的功能/模块 | Supported
 
 **驱动**
 
-- [x] GPIO 目前支持基本的 mode、write、read
-- [x] GPIO Master mode 目前仅支持 HSPI
-- [x] sigmadelta second-order
+- [x] GPIO: 目前支持基本的 mode、write、read
+- [x] SPI Master mode: 目前仅支持 HSPI
+- [x] Sigmadelta second-order Modulation
+- [x] Remote Contrl: 目前仅支持发送数据，可用于红外、WS2812
 
 **Node**
 
 - [x] 定时器，目前支持 setTimeout、setInterval、delay（同步非阻塞延时）
-- [x] CMD模块系统
+- [x] CMD模块系统，支持文件系统模块、内置模块、native模块
 - [x] native Addons（需源码编译到固件，未来我们会支持 静态库）
 - [x] 串口错误日志输出 (方便调试代码报错)
 
 # 特性 | Feature
 
 - 纯 C 开发，代码结构遵循NodeJS，上手简单
+- 支持 同步并且非阻塞 编程，能编写准实时、硬件驱动等高实时应用程序。
 - 遵循 CMD 模块规范
 - 使用开源 JerryScript，内存开销小，开源社区支持
 - 完整 ES5， 部分 ES6 语法支持
@@ -65,7 +71,7 @@ var foo = require('/foo.js')
 
 console.log('hello nodemcujs')
 
-process.delay(1000) // sync operation
+process.delay(1000) // sync and non-block
 
 setTimeout(function() {
   console.log('timeout')
