@@ -127,7 +127,7 @@ JS_FUNCTION(Delay) {
   return jerry_create_boolean(true);
 }
 
-void nodemcujs_module_init_timers()
+jerry_value_t nodemcujs_module_init_timers()
 {
   timerIdList = list_new();
 
@@ -139,5 +139,5 @@ void nodemcujs_module_init_timers()
   nodemcujs_jval_set_method(timer, "clearTimeout", ClearTimerHandler);
   nodemcujs_jval_set_method(timer, "delay", Delay);
 
-  jerry_release_value(timer);
+  return timer;
 }
