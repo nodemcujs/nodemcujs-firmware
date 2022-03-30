@@ -7,27 +7,36 @@
 
 #include "nodemcujs_module.h"
 
-const unsigned nodemcujs_modules_count = 7;
+const unsigned nodemcujs_modules_count = 10;
 
 extern jerry_value_t nodemcujs_module_init_console();
+extern jerry_value_t nodemcujs_module_init_esp_error();
 extern jerry_value_t nodemcujs_module_init_gpio();
+extern jerry_value_t nodemcujs_module_init_nvs_flash();
 extern jerry_value_t nodemcujs_module_init_process();
 extern jerry_value_t nodemcujs_module_init_rmt();
 extern jerry_value_t nodemcujs_module_init_sigmadelta();
 extern jerry_value_t nodemcujs_module_init_spi_master();
 extern jerry_value_t nodemcujs_module_init_timers();
+extern jerry_value_t nodemcujs_module_init_wifi();
 
 const nodemcujs_module_t nodemcujs_modules[] = {
   { "console", nodemcujs_module_init_console },
+  { "esp_error", nodemcujs_module_init_esp_error },
   { "gpio", nodemcujs_module_init_gpio },
+  { "nvs_flash", nodemcujs_module_init_nvs_flash },
   { "process", nodemcujs_module_init_process },
   { "rmt", nodemcujs_module_init_rmt },
   { "sigmadelta", nodemcujs_module_init_sigmadelta },
   { "spi_master", nodemcujs_module_init_spi_master },
   { "timers", nodemcujs_module_init_timers },
+  { "wifi", nodemcujs_module_init_wifi },
 };
 
 nodemcujs_module_objects_t nodemcujs_module_objects[] = {
+  { 0 },
+  { 0 },
+  { 0 },
   { 0 },
   { 0 },
   { 0 },

@@ -6,13 +6,17 @@ nodemcujs 是一个在 ESP32 芯片上的 JavaScript 运行时。不同于 NodeM
 
 # 文档 | Documentation
 
-website: http://nodemcujs.timor.tech
+website: http://timor.tech 正在编写文档，under the development
 
 github: https://github.com/nodemcujs/nodemcujs-doc
 
 这是 nodemcujs 的网站，所有文档和最新信息将会发布在这里。也可以通过 fork 项目贡献文章。文档还在不断完善中。
 
 # 示例 | Examples
+
+**WIFI**
+
+- [connect to WIFI: examples/wifi/connect_to_ap.js](examples/wifi/connect_to_ap.js)
 
 **SPI**
 
@@ -31,10 +35,13 @@ github: https://github.com/nodemcujs/nodemcujs-doc
 
 **驱动**
 
+- [x] WIFI: 目前支持STA模式，AP模式的API正在开发中
 - [x] GPIO: 目前支持基本的 mode、write、read
 - [x] SPI Master mode: 目前仅支持 HSPI
 - [x] Sigmadelta second-order Modulation
 - [x] Remote Contrl: 目前仅支持发送数据，可用于红外、WS2812
+- [x] NVS FLASH: 用于保存系统信息，比如WIFI设置
+- [x] ESP ERROR: 用于查找系统层统一的报错信息，格式化成可阅读的字符串
 
 **Node**
 
@@ -78,6 +85,25 @@ setTimeout(function() {
 }, 1000)
 
 console.log('hello world')
+```
+
+# WIFI hello world
+
+```js
+var wifi = require('wifi')
+
+wifi.init();
+
+wifi.setMode(wifi.WIFI_MODE.STA);
+
+wifi.setConfig(wifi.WIFI_MODE.STA, {
+  ssid: 'SSID',
+  password: 'PASS',
+  auth: wifi.WIFI_AUTH_MODE.WIFI_AUTH_WPA2_PSK
+});
+
+wifi.start();
+wifi.connect();  // connect to ap
 ```
 
 # 快速开始

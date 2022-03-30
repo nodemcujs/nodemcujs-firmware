@@ -47,6 +47,10 @@ extern const char util_n[];
 extern const uint8_t util_s[];
 extern const size_t util_l;
 
+extern const char wifi_n[];
+extern const uint8_t wifi_s[];
+extern const size_t wifi_l;
+
 typedef struct {
   const char* name;
   const void* code;

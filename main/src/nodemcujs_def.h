@@ -20,8 +20,8 @@
 // #endif
 
 #define NODEMCUJS_VERSION                                                        \
-  TOSTRING(NODE_MAJOR_VERSION)"."                                               \
-  TOSTRING(NODE_MINOR_VERSION)"."                                               \
+  TOSTRING(NODE_MAJOR_VERSION)"."                                                \
+  TOSTRING(NODE_MINOR_VERSION)"."                                                \
   TOSTRING(NODE_PATCH_VERSION)
 
 // works for gcc and IAR's compiler
@@ -38,3 +38,10 @@
   } while (0)
 
 #endif
+
+#define NESP_CHECK_OK(err)                                                       \
+  do {                                                                           \
+    if (err != ESP_OK) {                                                         \
+      return jerry_create_number(err);                                           \
+    }                                                                            \
+  } while (0)
