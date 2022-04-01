@@ -8,6 +8,9 @@
 #include "esp_event.h"
 #include "esp_wifi.h"
 
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+
 #include "esp_err.h"
 
 static jerry_value_t JS_EVENT_CB = NULL;
@@ -168,6 +171,59 @@ JS_FUNCTION(Connect) {
   return jerry_create_number(err);
 }
 
+JS_FUNCTION(ScanSync) {
+  jerry_value_t config = JS_GET_ARG(0, object);
+
+  jerry_value_t jchannel = nodemcujs_jval_get_property(config, "channel");
+  uint8_t channel = nodemcujs_jval_as_number(jchannel);
+  jerry_release_value(jchannel);
+
+  jerry_value_t jshowHidden = nodemcujs_jval_get_property(config, "showHidden");
+  bool show_hidden = nodemcujs_jval_as_boolean(jshowHidden);
+  jerry_release_value(jshowHidden);
+
+  jerry_value_t jscanType = nodemcujs_jval_get_property(config, "scanType");
+  uint8_t scan_type = nodemcujs_jval_as_number(jscanType);
+  jerry_release_value(jscanType);
+
+  wifi_scan_config_t cfg = {
+    .ssid = NULL,
+    .bssid = NULL,
+    .channel = channel,
+    .show_hidden = show_hidden,
+    .scan_type = scan_type,
+    .scan_time = {
+      .passive = 120,
+      .active = {
+        .max = 0,
+        .min = 0
+      }
+    }
+  };
+  esp_err_t err = esp_wifi_scan_start(&cfg, false);
+  NESP_CHECK_OK(err);
+  vTaskDelay(13 * 120 / portTICK_PERIOD_MS);
+
+  uint16_t apCount = 0;
+  err = esp_wifi_scan_get_ap_num(&apCount);
+  NESP_CHECK_OK(err);
+  wifi_ap_record_t apInfos[apCount];
+  err = esp_wifi_scan_get_ap_records(&apCount, apInfos);
+  NESP_CHECK_OK(err);
+  jerry_value_t jarr = jerry_create_array(apCount);
+  for (uint16_t i = 0; i < apCount; i++)
+  {
+    jerry_value_t japInfo = jerry_create_object();
+    wifi_ap_record_t apInfo = apInfos[i];
+    nodemcujs_jval_set_string(japInfo, "ssid", (char*)apInfo.ssid);
+    nodemcujs_jval_set_string(japInfo, "bssid", (char*)apInfo.bssid);
+    nodemcujs_jval_set_property_jval(japInfo, "rssi", jerry_create_number(apInfo.rssi));
+    jerry_set_property_by_index(jarr, i, japInfo);
+  }
+
+  return jarr;
+}
+
 jerry_value_t nodemcujs_module_init_wifi() {
   jerry_value_t wifi = jerry_create_object();
   nodemcujs_jval_set_method(wifi, "init", Init);
@@ -177,5 +233,6 @@ jerry_value_t nodemcujs_module_init_wifi() {
   nodemcujs_jval_set_method(wifi, "setEventListener", SetEventListener);
   nodemcujs_jval_set_method(wifi, "addListenEvent", AddListenEvent);
   nodemcujs_jval_set_method(wifi, "connect", Connect);
+  nodemcujs_jval_set_method(wifi, "scanSync", ScanSync);
   return wifi;
 }

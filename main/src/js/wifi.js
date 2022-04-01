@@ -1,6 +1,7 @@
 'use strict';
 
 var Native = require('native');
+var util = Native.require('util');
 var wifi = native
 
 var WIFI_MODE = {
@@ -20,6 +21,11 @@ var WIFI_AUTH_MODE = {
   WIFI_AUTH_WPA2_WPA3_PSK: 7,
   WIFI_AUTH_WAPI_PSK: 8,
   WIFI_AUTH_MAX: 9
+};
+
+var SCAN_TYPE = {
+  ACTIVE: 0,
+  PASSIVE: 1
 };
 
 var EVENT_NAME_MAP = {
@@ -83,6 +89,7 @@ function addListenEvent(name) {
 module.exports = {
   WIFI_MODE: WIFI_MODE,
   WIFI_AUTH_MODE: WIFI_AUTH_MODE,
+  SCAN_TYPE: SCAN_TYPE,
   EVENT_NAME: EVENT_NAME,
   WIFI_EVENT_CODE: WIFI_EVENT_CODE,
   IP_EVENT_CODE: IP_EVENT_CODE,
@@ -93,5 +100,6 @@ module.exports = {
   start: wifi.start,
   setEventListener: wifi.setEventListener,
   addListenEvent: addListenEvent,
-  connect: wifi.connect
+  connect: wifi.connect,
+  scanSync: wifi.scanSync
 };
