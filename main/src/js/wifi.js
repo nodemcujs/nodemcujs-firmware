@@ -101,5 +101,5 @@ module.exports = {
   setEventListener: wifi.setEventListener,
   addListenEvent: addListenEvent,
   connect: wifi.connect,
-  scanSync: wifi.scanSync
+  scanASync: wifi.scanASync
 };

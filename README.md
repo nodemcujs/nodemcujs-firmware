@@ -6,7 +6,7 @@ nodemcujs 是一个在 ESP32 芯片上的 JavaScript 运行时。不同于 NodeM
 
 # 文档 | Documentation
 
-website: http://timor.tech 正在编写文档，under the development
+website: https://timor.tech 正在编写文档，under the development
 
 github: https://github.com/nodemcujs/nodemcujs-doc
 
@@ -16,7 +16,8 @@ github: https://github.com/nodemcujs/nodemcujs-doc
 
 **WIFI**
 
-- [connect to WIFI: examples/wifi/connect_to_ap.js](examples/wifi/connect_to_ap.js)
+- [连接 WIFI: examples/wifi/connect_to_ap.js](examples/wifi/connect_to_ap.js)
+- [扫描 WIFI 热点: examples/wifi/scan_ap.js](examples/wifi/scan_ap.js)
 
 **SPI**
 
@@ -35,7 +36,7 @@ github: https://github.com/nodemcujs/nodemcujs-doc
 
 **驱动**
 
-- [x] WIFI: 目前支持STA模式，AP模式的API正在开发中
+- [x] WIFI: 目前支持 STA 模式，支持 WIFI 事件，扫描热点。AP 模式的 API 正在开发中
 - [x] GPIO: 目前支持基本的 mode、write、read
 - [x] SPI Master mode: 目前仅支持 HSPI
 - [x] Sigmadelta second-order Modulation
@@ -52,13 +53,13 @@ github: https://github.com/nodemcujs/nodemcujs-doc
 
 # 特性 | Feature
 
-- 纯 C 开发，代码结构遵循NodeJS，上手简单
+- 纯 C 开发，代码结构遵循 NodeJS，上手简单
 - 支持 同步并且非阻塞 编程，能编写准实时、硬件驱动等高实时应用程序。
 - 遵循 CMD 模块规范
 - 使用开源 JerryScript，内存开销小，开源社区支持
 - 完整 ES5， 部分 ES6 语法支持
 - 虚拟文件系统
-- 串口shell命令行交互，方便调试
+- 串口 shell 命令行交互，方便调试
 - 使用官方 ESP_IDF 工程，集成硬件驱动
 
 # Todo

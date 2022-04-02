@@ -27,7 +27,7 @@ ret = wifi.setMode(wifi.WIFI_MODE.STA);
 console.log('wifi setMode', ret);
 ret = wifi.start();
 console.log('wifi start', ret);
-ret = wifi.scanSync({
+ret = wifi.scanASync({
   channel: 0,
   showHidden: false,
   scanType: wifi.SCAN_TYPE.ACTIVE

@@ -171,7 +171,7 @@ JS_FUNCTION(Connect) {
   return jerry_create_number(err);
 }
 
-JS_FUNCTION(ScanSync) {
+JS_FUNCTION(ScanASync) {
   jerry_value_t config = JS_GET_ARG(0, object);
 
   jerry_value_t jchannel = nodemcujs_jval_get_property(config, "channel");
@@ -233,6 +233,6 @@ jerry_value_t nodemcujs_module_init_wifi() {
   nodemcujs_jval_set_method(wifi, "setEventListener", SetEventListener);
   nodemcujs_jval_set_method(wifi, "addListenEvent", AddListenEvent);
   nodemcujs_jval_set_method(wifi, "connect", Connect);
-  nodemcujs_jval_set_method(wifi, "scanSync", ScanSync);
+  nodemcujs_jval_set_method(wifi, "scanASync", ScanASync);
   return wifi;
 }
