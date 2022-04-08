@@ -7,11 +7,12 @@
 
 #include "nodemcujs_module.h"
 
-const unsigned nodemcujs_modules_count = 10;
+const unsigned nodemcujs_modules_count = 11;
 
 extern jerry_value_t nodemcujs_module_init_console();
 extern jerry_value_t nodemcujs_module_init_esp_error();
 extern jerry_value_t nodemcujs_module_init_gpio();
+extern jerry_value_t nodemcujs_module_init_http_client();
 extern jerry_value_t nodemcujs_module_init_nvs_flash();
 extern jerry_value_t nodemcujs_module_init_process();
 extern jerry_value_t nodemcujs_module_init_rmt();
@@ -24,6 +25,7 @@ const nodemcujs_module_t nodemcujs_modules[] = {
   { "console", nodemcujs_module_init_console },
   { "esp_error", nodemcujs_module_init_esp_error },
   { "gpio", nodemcujs_module_init_gpio },
+  { "http_client", nodemcujs_module_init_http_client },
   { "nvs_flash", nodemcujs_module_init_nvs_flash },
   { "process", nodemcujs_module_init_process },
   { "rmt", nodemcujs_module_init_rmt },
@@ -34,6 +36,7 @@ const nodemcujs_module_t nodemcujs_modules[] = {
 };
 
 nodemcujs_module_objects_t nodemcujs_module_objects[] = {
+  { 0 },
   { 0 },
   { 0 },
   { 0 },

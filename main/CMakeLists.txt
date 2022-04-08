@@ -146,7 +146,7 @@ target_include_directories(${NODEMCUJS_LIB} PUBLIC ${JERRYSCRIPT_ROOT}/jerry-ext
 target_include_directories(${NODEMCUJS_LIB} PUBLIC include)
 target_include_directories(${NODEMCUJS_LIB} PUBLIC src)
 
-target_link_libraries(${NODEMCUJS_LIB} PRIVATE idf::spi_flash idf::spiffs idf::list idf::nvs_flash)
+target_link_libraries(${NODEMCUJS_LIB} PRIVATE idf::spi_flash idf::spiffs idf::list idf::nvs_flash idf::esp_http_client)
 
 target_link_libraries(${COMPONENT_LIB} INTERFACE ${NODEMCUJS_LIB})
 
