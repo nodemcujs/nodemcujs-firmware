@@ -11,19 +11,21 @@
 static const jerry_object_native_info_t NativeInfoHttpClient;
 
 JS_FUNCTION(ClientRequest) {
-  jerry_value_t jurl = nodemcujs_jval_get_property(jthis, "url");
+  jerry_value_t options = JS_GET_ARG(0, object);
+
+  jerry_value_t jurl = nodemcujs_jval_get_property(options, "url");
   nodemcujs_string_t url = nodemcujs_jval_as_string(jurl);
   jerry_release_value(jurl);
-  jerry_value_t jauthType = nodemcujs_jval_get_property(jthis, "authType");
+  jerry_value_t jauthType = nodemcujs_jval_get_property(options, "authType");
   uint8_t auth_type = nodemcujs_jval_as_number(jauthType);
   jerry_release_value(jauthType);
-  jerry_value_t jquery = nodemcujs_jval_get_property(jthis, "query");
+  jerry_value_t jquery = nodemcujs_jval_get_property(options, "query");
   nodemcujs_string_t query = nodemcujs_jval_as_string(jquery);
   jerry_release_value(jquery);
-  jerry_value_t jmethod = nodemcujs_jval_get_property(jthis, "method");
+  jerry_value_t jmethod = nodemcujs_jval_get_property(options, "method");
   uint8_t method = nodemcujs_jval_as_number(jmethod);
   jerry_release_value(jmethod);
-  jerry_value_t jtransportType = nodemcujs_jval_get_property(jthis, "transportType");
+  jerry_value_t jtransportType = nodemcujs_jval_get_property(options, "transportType");
   uint8_t transport_type = nodemcujs_jval_as_number(jtransportType);
   jerry_release_value(jtransportType);
 
@@ -44,7 +46,7 @@ JS_FUNCTION(Open) {
   esp_http_client_handle_t client;
   bool has_p = jerry_get_object_native_pointer(jthis, &client, &NativeInfoHttpClient);
   if (!has_p) {
-    return jerry_create_error(JERRY_ERROR_REFERENCE, "The native http client is undefiend");
+    return jerry_create_error(JERRY_ERROR_REFERENCE, (jerry_char_t*)"The native http client is undefiend");
   }
 
   int length = JS_GET_ARG(0, number);
@@ -56,7 +58,7 @@ JS_FUNCTION(Write) {
   esp_http_client_handle_t client;
   bool has_p = jerry_get_object_native_pointer(jthis, &client, &NativeInfoHttpClient);
   if (!has_p) {
-    return jerry_create_error(JERRY_ERROR_REFERENCE, "The native http client is undefiend");
+    return jerry_create_error(JERRY_ERROR_REFERENCE, (jerry_char_t*)"The native http client is undefiend");
   }
 
   nodemcujs_string_t data = JS_GET_ARG(0, string);
@@ -69,7 +71,7 @@ JS_FUNCTION(FetchHeaders) {
   esp_http_client_handle_t client;
   bool has_p = jerry_get_object_native_pointer(jthis, &client, &NativeInfoHttpClient);
   if (!has_p) {
-    return jerry_create_error(JERRY_ERROR_REFERENCE, "The native http client is undefiend");
+    return jerry_create_error(JERRY_ERROR_REFERENCE, (jerry_char_t*)"The native http client is undefiend");
   }
 
   int content_length = esp_http_client_fetch_headers(client);
@@ -85,7 +87,7 @@ jerry_value_t nodemcujs_module_init_http_client() {
   nodemcujs_jval_set_method(prototype, "write", Write);
   nodemcujs_jval_set_method(prototype, "fetchHeaders", FetchHeaders);
   nodemcujs_jval_set_property_jval(jClientRequest, "prototype", prototype);
-  nodemcujs_jval_set_method(httpClient, "ClientRequest", jClientRequest);
+  nodemcujs_jval_set_property_jval(httpClient, "ClientRequest", jClientRequest);
 
   jerry_release_value(prototype);
   jerry_release_value(jClientRequest);
