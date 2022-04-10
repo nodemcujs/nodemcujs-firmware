@@ -78,6 +78,44 @@ JS_FUNCTION(FetchHeaders) {
   return jerry_create_number(content_length);
 }
 
+JS_FUNCTION(GetStatusCode) {
+  esp_http_client_handle_t client;
+  bool has_p = jerry_get_object_native_pointer(jthis, &client, &NativeInfoHttpClient);
+  if (!has_p) {
+    return jerry_create_error(JERRY_ERROR_REFERENCE, (jerry_char_t*)"The native http client is undefiend");
+  }
+
+  int code = esp_http_client_get_status_code(client);
+  return jerry_create_number(code);
+}
+
+JS_FUNCTION(Read) {
+  esp_http_client_handle_t client;
+  bool has_p = jerry_get_object_native_pointer(jthis, &client, &NativeInfoHttpClient);
+  if (!has_p) {
+    return jerry_create_error(JERRY_ERROR_REFERENCE, (jerry_char_t*)"The native http client is undefiend");
+  }
+
+  uint32_t len = JS_GET_ARG(0, number);
+  char *buffer = (char*)malloc(len + 1);
+  if (buffer == NULL) {
+    return jerry_create_error(JERRY_ERROR_RANGE, (jerry_char_t*)NODE_OUT_OF_MEMORY);
+  }
+  int rlen = esp_http_client_read(client, buffer, len);
+  if (rlen < 0) {
+    free(buffer);
+    return jerry_create_number(rlen);
+  }
+  if (rlen == 0) {
+    free(buffer);
+    return jerry_create_string((jerry_char_t*)"");
+  }
+  buffer[rlen] = '\0';
+  jerry_value_t jstr = jerry_create_string((jerry_char_t*)buffer);
+  free(buffer);
+  return jstr;
+}
+
 jerry_value_t nodemcujs_module_init_http_client() {
   jerry_value_t httpClient = jerry_create_object();
   jerry_value_t jClientRequest = jerry_create_external_function(ClientRequest);
@@ -85,7 +123,9 @@ jerry_value_t nodemcujs_module_init_http_client() {
   
   nodemcujs_jval_set_method(prototype, "open", Open);
   nodemcujs_jval_set_method(prototype, "write", Write);
+  nodemcujs_jval_set_method(prototype, "read", Read);
   nodemcujs_jval_set_method(prototype, "fetchHeaders", FetchHeaders);
+  nodemcujs_jval_set_method(prototype, "getStatusCode", GetStatusCode);
   nodemcujs_jval_set_property_jval(jClientRequest, "prototype", prototype);
   nodemcujs_jval_set_property_jval(httpClient, "ClientRequest", jClientRequest);
 
