@@ -287,7 +287,7 @@ nodemcujs 会在启动时检查分区，如果无法挂载 `storage` 分区，�
 **手动烧录文件镜像**
 
 ```bash
-$ python esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 115200 write_flash -z 0x110000 spiffs.bin
+$ python esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 115200 write_flash -z 0x110000 storage.bin
 ```
 
 > 手动烧录文件镜像请将 /dev/ttyUSB0 替换为你实际的设备，或者自动选择设备。
