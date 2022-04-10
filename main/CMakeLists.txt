@@ -9,6 +9,11 @@ set(NODEMCUJS_LIB nodemcujs-main)
 set(ROOT_DIR ${CMAKE_SOURCE_DIR}/main)
 set(NODEMCUJS_SOURCE_DIR ${CMAKE_SOURCE_DIR}/main/src)
 
+partition_table_get_partition_info(STORAGE_OFFSET "--partition-type data --partition-subtype spiffs" "offset")
+idf_build_get_property(PYTHON PYTHON)
+idf_build_get_property(IDF_PATH IDF_PATH)
+idf_build_get_property(IDF_TARGET IDF_TARGET)
+
 message("JERRYSCRIPT_ROOT: ${JERRYSCRIPT_ROOT}")
 
 aux_source_directory(src NODEMCUJS_SRCS)
@@ -40,7 +45,7 @@ endif()
 
 add_custom_command(
   OUTPUT ${NODEMCUJS_SOURCE_DIR}/nodemcujs_js.c ${NODEMCUJS_SOURCE_DIR}/nodemcujs_js.h
-  COMMAND python ${ROOT_DIR}/tools/js2c.py
+  COMMAND ${PYTHON} ${ROOT_DIR}/tools/js2c.py
   ARGS --buildtype=${JS2C_RUN_MODE}
        --modules '${NODEMCUJS_JS_MODULES_PARAM}'
        ${JS2C_SNAPSHOT_ARG}
@@ -153,3 +158,14 @@ target_link_libraries(${COMPONENT_LIB} INTERFACE ${NODEMCUJS_LIB})
 # build spiffs image
 
 spiffs_create_partition_image(storage ../spiffs FLASH_IN_PROJECT)
+
+add_custom_command(
+  OUTPUT flash_storage_cmd
+  COMMAND ${PYTHON} ${IDF_PATH}/components/esptool_py/esptool/esptool.py
+  ARGS --chip ${IDF_TARGET}
+       write_flash
+       -z ${STORAGE_OFFSET}
+       ${CMAKE_BINARY_DIR}/storage.bin
+  DEPENDS spiffs_storage_bin
+)
+add_custom_target(flash_storage DEPENDS flash_storage_cmd)
