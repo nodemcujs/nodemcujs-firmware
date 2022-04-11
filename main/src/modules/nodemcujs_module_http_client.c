@@ -116,6 +116,30 @@ JS_FUNCTION(Read) {
   return jstr;
 }
 
+JS_FUNCTION(Close) {
+  esp_http_client_handle_t client;
+  bool has_p = jerry_get_object_native_pointer(jthis, &client, &NativeInfoHttpClient);
+  if (!has_p) {
+    return jerry_create_error(JERRY_ERROR_REFERENCE, (jerry_char_t*)"The native http client is undefiend");
+  }
+
+  esp_err_t err = esp_http_client_close(client);
+  return jerry_create_number(err);
+}
+
+JS_FUNCTION(Cleanup) {
+  esp_http_client_handle_t client;
+  bool has_p = jerry_get_object_native_pointer(jthis, &client, &NativeInfoHttpClient);
+  if (!has_p) {
+    return jerry_create_error(JERRY_ERROR_REFERENCE, (jerry_char_t*)"The native http client is undefiend");
+  }
+
+  esp_err_t err = esp_http_client_cleanup(client);
+  NESP_CHECK_OK(err);
+  jerry_set_object_native_pointer(jthis, NULL, &NativeInfoHttpClient);
+  return jerry_create_number(err);
+}
+
 jerry_value_t nodemcujs_module_init_http_client() {
   jerry_value_t httpClient = jerry_create_object();
   jerry_value_t jClientRequest = jerry_create_external_function(ClientRequest);
@@ -124,8 +148,10 @@ jerry_value_t nodemcujs_module_init_http_client() {
   nodemcujs_jval_set_method(prototype, "open", Open);
   nodemcujs_jval_set_method(prototype, "write", Write);
   nodemcujs_jval_set_method(prototype, "read", Read);
-  nodemcujs_jval_set_method(prototype, "fetchHeaders", FetchHeaders);
-  nodemcujs_jval_set_method(prototype, "getStatusCode", GetStatusCode);
+  nodemcujs_jval_set_method(prototype, "close", Close);
+  nodemcujs_jval_set_method(prototype, "cleanup", Cleanup);
+  nodemcujs_jval_set_method(prototype, "write", Write);
+  nodemcujs_jval_set_method(prototype, "read", Read);
   nodemcujs_jval_set_property_jval(jClientRequest, "prototype", prototype);
   nodemcujs_jval_set_property_jval(httpClient, "ClientRequest", jClientRequest);
 
