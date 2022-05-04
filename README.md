@@ -14,6 +14,10 @@ github: https://github.com/nodemcujs/nodemcujs-doc
 
 # 示例 | Examples
 
+**HTTP Client**
+
+- [HTTP 流式传输: examples/http/http_stream.js](examples/http/http_stream.js)
+
 **WIFI**
 
 - [连接 WIFI: examples/wifi/connect_to_ap.js](examples/wifi/connect_to_ap.js)
@@ -46,6 +50,7 @@ github: https://github.com/nodemcujs/nodemcujs-doc
 
 **Node**
 
+- [x] HTTP Client 支持 stream 流式传输，支持基本的 GET/POST/PUT/DELETE etc... 等请求
 - [x] 定时器，目前支持 setTimeout、setInterval、delay（同步非阻塞延时）
 - [x] CMD模块系统，支持文件系统模块、内置模块、native模块
 - [x] native Addons（需源码编译到固件，未来我们会支持 静态库）
