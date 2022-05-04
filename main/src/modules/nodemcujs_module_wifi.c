@@ -30,11 +30,20 @@ static void event_handler(void* arg, esp_event_base_t base, int32_t id, void* da
   if (base == IP_EVENT) {
     if (id == IP_EVENT_STA_GOT_IP) {
       ip_event_got_ip_t* event = (ip_event_got_ip_t*) data;
-      NLOG_ERR("got ip: "IPSTR"\n", IP2STR(&event->ip_info.ip));
+      char ip[16];
+      char netmask[16];
+      char gw[16];
+      uint8_t ip_len = sprintf(ip, IPSTR, IP2STR(&event->ip_info.ip));
+      uint8_t netmask_len = sprintf(netmask, IPSTR, IP2STR(&event->ip_info.netmask));
+      uint8_t gw_len = sprintf(gw, IPSTR, IP2STR(&event->ip_info.gw));
+      ip[ip_len] = '\0';
+      netmask[netmask_len] = '\0';
+      gw[gw_len] = '\0';
+
       nodemcujs_jval_set_property_jval(jdata, "ip_changed", jerry_create_boolean(event->ip_changed));
-      nodemcujs_jval_set_property_jval(jdata, "ip", jerry_create_number((uint32_t)event->ip_info.ip.addr));
-      nodemcujs_jval_set_property_jval(jdata, "netmask", jerry_create_number((uint32_t)event->ip_info.netmask.addr));
-      nodemcujs_jval_set_property_jval(jdata, "gw", jerry_create_number((uint32_t)event->ip_info.gw.addr));
+      nodemcujs_jval_set_property_jval(jdata, "ip", jerry_create_string((jerry_char_t*)ip));
+      nodemcujs_jval_set_property_jval(jdata, "netmask", jerry_create_string((jerry_char_t*)netmask));
+      nodemcujs_jval_set_property_jval(jdata, "gw", jerry_create_string((jerry_char_t*)gw));
     }
   }
 

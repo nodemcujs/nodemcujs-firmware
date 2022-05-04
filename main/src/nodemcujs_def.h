@@ -24,6 +24,8 @@
   TOSTRING(NODE_MINOR_VERSION)"."                                                \
   TOSTRING(NODE_PATCH_VERSION)
 
+#define NODE_OUT_OF_MEMORY "OOM"
+
 // works for gcc and IAR's compiler
 #define NLOG_ERR(message, ...)                                                   \
   printf("%s:%d: "message"\n", __FILE__, __LINE__, ## __VA_ARGS__)

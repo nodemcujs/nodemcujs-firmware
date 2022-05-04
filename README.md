@@ -14,6 +14,10 @@ github: https://github.com/nodemcujs/nodemcujs-doc
 
 # 示例 | Examples
 
+**HTTP Client**
+
+- [HTTP 流式传输: examples/http/http_stream.js](examples/http/http_stream.js)
+
 **WIFI**
 
 - [连接 WIFI: examples/wifi/connect_to_ap.js](examples/wifi/connect_to_ap.js)
@@ -46,6 +50,7 @@ github: https://github.com/nodemcujs/nodemcujs-doc
 
 **Node**
 
+- [x] HTTP Client 支持 stream 流式传输，支持基本的 GET/POST/PUT/DELETE etc... 等请求
 - [x] 定时器，目前支持 setTimeout、setInterval、delay（同步非阻塞延时）
 - [x] CMD模块系统，支持文件系统模块、内置模块、native模块
 - [x] native Addons（需源码编译到固件，未来我们会支持 静态库）
@@ -61,6 +66,7 @@ github: https://github.com/nodemcujs/nodemcujs-doc
 - 虚拟文件系统
 - 串口 shell 命令行交互，方便调试
 - 使用官方 ESP_IDF 工程，集成硬件驱动
+- 集成 js 文件分区工具，不需要了解分区表，能一键制作文件镜像、烧写文件镜像到 ESP32 板子上
 
 # Todo
 
@@ -153,7 +159,7 @@ $ git clone --recursive git@github.com:nodemcujs/nodemcujs-firmware.git
 $ git submodule update --init
 ```
 
-## 3. 编译固件
+## 3. 一键编译固件
 
 先进入项目根目录：
 
@@ -188,7 +194,7 @@ $ make menuconfig
 $ make
 ```
 
-## 4. 烧录固件
+## 4. 一键烧录固件
 
 如果编译成功，会生成 4 个文件：
 
@@ -247,16 +253,17 @@ $ python esptool.py --chip esp32 -p /dev/ttyUSB0 -b 460800 write_flash --flash_m
 
 ## 6. 制作文件镜像
 
-制作文件镜像有多种方式，我们推荐使用 nodemcujs 里面集成的方式: 
-
-- 将你的 .js 文件或者其它文件放到项目根目录下的 `spiffs` 文件夹内，该文件夹下面的所有文件会被打包成一个 `storage.bin` 镜像。
-- 然后执行 `make flash` 即可制作镜像并且自动烧录。
-
-**手动制作文件镜像**
-
 nodemcujs 使用 [spiffs][spiffs] 作为默认文件系统，容量大约为 `2.7MB`，所以文件的总大小不能超出此范围。关于为什么容量只有 2.7MB，请参考 [partitions.csv][partitions.csv]。
 
 我们建议将要烧录到 flash 存储的文件放到 `spiffs` 文件夹内，在我们的构建系统中，我们将会自动构建 flash 镜像并随固件一起烧录。文件系统是默认以 `/` 为根目录的。
+
+制作文件镜像有多种方式，我们推荐使用 nodemcujs 里面集成的方式: 
+
+- 将你的 .js 文件或者其它文件放到项目根目录下的 `spiffs` 文件夹内。
+- 然后执行 `make spiffs_storage_bin` 命令即可一键制作文件镜像。
+- nodemcujs 会将 `spiffs` 文件夹下面的所有文件打包成一个 `storage.bin` 镜像。
+
+**手动制作文件镜像**
 
 我们使用 [mkspiffs][mkspiffs] 来制作镜像。这是 C++ 工程，首先你要编译它，得到可执行文件 `mkspiffs`。
 
@@ -274,17 +281,21 @@ $ mkspiffs -c spiffs -b 4096 -p 256 -s 0x2F0000 storage.bin
 
 ## 7. 烧录文件到 flash 芯片
 
-**手动烧录文件镜像**
-
 nodemcujs 会在启动时检查分区，如果无法挂载 `storage` 分区，则会`自动格式化 storage` 分区并挂载。
 
 你可以将你的 JavaScript 应用或者任何文件烧录到 ESP32 上，nodemcujs 会在启动时自动加载 `/spiffs/index.js` 文件，所以这可能是自动启动应用的一个好主意。
 
+烧录文件镜像有多种方式，我们推荐使用 nodemcujs 里面集成的方式:
+
+- 执行 `make flash-storage` 命令即可一键烧录文件镜像。
+
+**手动烧录文件镜像**
+
 ```bash
-$ python esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 115200 write_flash -z 0x110000 spiffs.bin
+$ python esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 115200 write_flash -z 0x110000 storage.bin
 ```
 
-使用上面的命令将文件镜像烧录到 flash 中。
+> 手动烧录文件镜像请将 /dev/ttyUSB0 替换为你实际的设备，或者自动选择设备。
 
 有几点需要注意：
 
