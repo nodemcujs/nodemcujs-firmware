@@ -20,24 +20,41 @@ JS_FUNCTION(ClientRequest) {
   uint8_t auth_type = nodemcujs_jval_as_number(jauthType);
   jerry_release_value(jauthType);
   jerry_value_t jquery = nodemcujs_jval_get_property(options, "query");
-  nodemcujs_string_t query = nodemcujs_jval_as_string(jquery);
-  jerry_release_value(jquery);
   jerry_value_t jmethod = nodemcujs_jval_get_property(options, "method");
   uint8_t method = nodemcujs_jval_as_number(jmethod);
   jerry_release_value(jmethod);
   jerry_value_t jtransportType = nodemcujs_jval_get_property(options, "transportType");
   uint8_t transport_type = nodemcujs_jval_as_number(jtransportType);
   jerry_release_value(jtransportType);
+  jerry_value_t jtimeout = nodemcujs_jval_get_property(options, "timeout");
 
   esp_http_client_config_t cfg = {
     .url = nodemcujs_string_data(&url),
-    .query = nodemcujs_string_data(&query),
     .method = method,
-    .transport_type = transport_type
+    .transport_type = transport_type,
+    .auth_type = auth_type
   };
+
+  nodemcujs_string_t query;
+  if (jerry_value_is_string(jquery)) {
+    query = nodemcujs_jval_as_string(jquery);
+    cfg.query = nodemcujs_string_data(&query);
+  }
+
+  if (jerry_value_is_number(jtimeout)) {
+    int timeout = nodemcujs_jval_as_number(jtimeout);
+    cfg.timeout_ms = timeout;
+  }
+  jerry_release_value(jtimeout);
+
   esp_http_client_handle_t client = esp_http_client_init(&cfg);
+
   nodemcujs_string_destroy(&url);
-  nodemcujs_string_destroy(&query);
+  if (jerry_value_is_string(jquery)) {
+    nodemcujs_string_destroy(&query);
+  }
+  jerry_release_value(jquery);
+
   jerry_set_object_native_pointer(jthis, client, &NativeInfoHttpClient);
   return jerry_create_undefined();
 }
@@ -148,10 +165,10 @@ jerry_value_t nodemcujs_module_init_http_client() {
   nodemcujs_jval_set_method(prototype, "open", Open);
   nodemcujs_jval_set_method(prototype, "write", Write);
   nodemcujs_jval_set_method(prototype, "read", Read);
+  nodemcujs_jval_set_method(prototype, "fetchHeaders", FetchHeaders);
+  nodemcujs_jval_set_method(prototype, "getStatusCode", GetStatusCode);
   nodemcujs_jval_set_method(prototype, "close", Close);
   nodemcujs_jval_set_method(prototype, "cleanup", Cleanup);
-  nodemcujs_jval_set_method(prototype, "write", Write);
-  nodemcujs_jval_set_method(prototype, "read", Read);
   nodemcujs_jval_set_property_jval(jClientRequest, "prototype", prototype);
   nodemcujs_jval_set_property_jval(httpClient, "ClientRequest", jClientRequest);
 
