@@ -287,7 +287,7 @@ nodemcujs 会在启动时检查分区，如果无法挂载 `storage` 分区，�
 
 烧录文件镜像有多种方式，我们推荐使用 nodemcujs 里面集成的方式:
 
-- 执行 `make flash_storage` 命令即可一键烧录文件镜像。
+- 执行 `make flash-storage` 命令即可一键烧录文件镜像。
 
 **手动烧录文件镜像**
 

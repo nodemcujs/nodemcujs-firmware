@@ -168,4 +168,4 @@ add_custom_command(
        ${CMAKE_BINARY_DIR}/storage.bin
   DEPENDS spiffs_storage_bin
 )
-add_custom_target(flash_storage DEPENDS flash_storage_cmd)
+add_custom_target(flash-storage DEPENDS flash_storage_cmd)
